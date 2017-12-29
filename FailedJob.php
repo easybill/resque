@@ -112,4 +112,33 @@ class FailedJob
             array_key_exists('resque.retry_attempt', $this->data['payload']['args'][0]) &&
             count($this->data['payload']['args'][0]['resque.retry_strategy']) === $this->data['payload']['args'][0]['resque.retry_attempt'];
     }
+
+    /**
+     * @return int
+     */
+    public function getCurrentAttempt()
+    {
+        if (!$this->hasRetryStrategy()) {
+            return 0;
+        }
+
+        // The first attempt dont have this entry.
+        if (!isset($this->data['payload']['args'][0]['resque.retry_attempt'])) {
+            return 1;
+        }
+
+        return $this->data['payload']['args'][0]['resque.retry_attempt'] + 1;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLastAttempt()
+    {
+        if (!$this->hasRetryStrategy()) {
+            return 0;
+        }
+
+        return count($this->data['payload']['args'][0]['resque.retry_strategy']) + 1;
+    }
 }

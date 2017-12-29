@@ -19,6 +19,7 @@
                     <th>Job</th>
                     <th>Error</th>
                     <th>Details</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -26,19 +27,23 @@
                 <tr>
                     <td class="span1">{{ job.queueName }}</td>
                     <td class="span2">{{ job.failedAt }}</td>
-                    <td class="span4">{{ job.name }}</td>
+                    <td class="span4">
+                        <b>{{ job.name }}</b>
+                        {% if job.hasRetryStrategy %}
+                            <i class="glyphicon glyphicon-repeat" title="Job has retry strategy"></i>
+                            {{ job.currentAttempt }}/{{ job.lastAttempt }}
+                        {% endif %}<br>
+                        <small>{{ job.id }}</small>
+                    </td>
                     <td class="span5">
-                        {{ job.exceptionClass }}<br>
+                        <b>{{ job.exceptionClass }}</b><br>
                         {{ job.error }}<br>
                      </td>
                     <td class="span6">
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#strackTrace" data-detail="#{{ job.id }}_stack">Stack Trace</button>
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#strackTrace" data-detail="#{{ job.id }}_args">Args</button>
-
                         <div class="hide" id="{{ job.id }}_stack">
-                            <p>
-                                {{ job.backtrace | join('<br>') }}
-                            </p>
+                            <code>{{ job.backtrace | join('<br>') | raw }}</code>
                         </div>
                         <div class="hide" id="{{ job.id }}_args">
                             <dl class="dl-horizontal">
@@ -48,6 +53,10 @@
                                 {% endfor %}
                             </dl>
                         </div>
+                    </td>
+                    <td>
+                        <a type="button" class="btn btn-danger" title="Delete" href="{{ path('ResqueBundle_failed_clear_job',{jobID: job.id}) }}"><i class="glyphicon glyphicon-trash"></i></a>
+                        <a type="button" class="btn btn-info" title="Retry" href="{{ path('ResqueBundle_failed_retry_job',{jobID: job.id}) }}"><i class="glyphicon glyphicon-repeat"></i></a>
                     </td>
                 </tr>
                 {% else %}
@@ -59,7 +68,7 @@
                 {% endfor %}
 
                     <div class="modal fade" id="strackTrace" tabindex="-1" role="dialog" aria-labelledby="strackTraceLabel">
-                        <div class="modal-dialog" role="document">
+                        <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>

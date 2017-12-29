@@ -170,6 +170,18 @@ class DefaultController extends Controller
     /**
      * @return RedirectResponse
      */
+    public function retryFailedJobAction($jobID)
+    {
+        $this->getResque()->retryFailedJob($jobID);
+
+        $this->addFlash('info', 'Retry Job #'.$jobID.'.');
+
+        return $this->redirectToRoute('ResqueBundle_failed_list');
+    }
+
+    /**
+     * @return RedirectResponse
+     */
     public function retryFailedAction()
     {
         $count = $this->getResque()->retryFailedJobs();
@@ -177,6 +189,18 @@ class DefaultController extends Controller
         $this->addFlash('info', 'Retry '.$count.' failed jobs.');
 
         return $this->redirectToRoute('ResqueBundle_homepage');
+    }
+
+    /**
+     * @return RedirectResponse
+     */
+    public function clearFailedJobAction($jobID)
+    {
+        $this->getResque()->clearFailedJob($jobID);
+
+        $this->addFlash('info', 'Clear Job #'.$jobID.'.');
+
+        return $this->redirectToRoute('ResqueBundle_failed_list');
     }
 
     /**

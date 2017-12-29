@@ -13,7 +13,14 @@
         {% endblock %}
     </head>
     <body>
-        <div class="container">
+        <div class="container-fuild">
+        {% for flash_message in app.session.flashBag.get('info') %}
+            {% if loop.first %}<div class="col-md-12">{% endif %}
+            <div class="alert alert-info">
+                {{ flash_message }}
+            </div>
+            {% if loop.last %}</div>{% endif %}
+        {% endfor %}
         {% block body %}{% endblock %}
         </div>
         {% block javascripts %}

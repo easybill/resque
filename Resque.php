@@ -368,7 +368,7 @@ class Resque implements EnqueueInterface
     /**
      * @param int $start
      * @param int $count
-     * @return array
+     * @return FailedJob[]
      */
     public function getFailedJobs($start = -100, $count = 100)
     {
@@ -419,6 +419,38 @@ class Resque implements EnqueueInterface
             \Resque::enqueue($failedJob->getQueueName(), $failedJob->getName(), $args);
         }
         return $count;
+    }
+
+    public function clearFailedJob($jobID)
+    {
+        $jobs = \Resque::redis()->lrange('failed', 0, -1);
+        foreach ($jobs as $job) {
+            $failedJob = new FailedJob(json_decode($job, true));
+            if ($failedJob->getId() == $jobID) {
+                \Resque::redis()->lrem('failed', 1, $job);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function retryFailedJob($jobID)
+    {
+        $jobs = \Resque::redis()->lrange('failed', 0, -1);
+        foreach ($jobs as $job) {
+            $failedJob = new FailedJob(json_decode($job, true));
+            if ($failedJob->getId() == $jobID) {
+                $args = $failedJob->getArgs()[0];
+
+                if ($failedJob->hasRetryStrategy()) {
+                    $args['resque.retry_attempt'] = 0;
+                }
+
+                \Resque::enqueue($failedJob->getQueueName(), $failedJob->getName(), $args);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
