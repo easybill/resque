@@ -56,7 +56,9 @@
                     </td>
                     <td>
                         <a type="button" class="btn btn-danger" title="Delete" href="{{ path('ResqueBundle_failed_clear_job',{jobID: job.id}) }}"><i class="glyphicon glyphicon-trash"></i></a>
-                        <a type="button" class="btn btn-info" title="Retry" href="{{ path('ResqueBundle_failed_retry_job',{jobID: job.id}) }}"><i class="glyphicon glyphicon-repeat"></i></a>
+                        {% if not job.hasRetryStrategy or job.isLastAttempt %}
+                            <a type="button" class="btn btn-info" title="Retry" href="{{ path('ResqueBundle_failed_retry_job',{jobID: job.id}) }}"><i class="glyphicon glyphicon-repeat"></i></a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% else %}
