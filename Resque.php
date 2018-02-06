@@ -112,7 +112,7 @@ class Resque implements EnqueueInterface
     /**
      * @param Job $job
      * @param bool $trackStatus
-     * @return null|\Resque_Job_Status
+     * @return string|bool|\Resque_Job_Status
      */
     public function enqueue(Job $job, $trackStatus = FALSE)
     {
@@ -128,7 +128,7 @@ class Resque implements EnqueueInterface
             return new \Resque_Job_Status($result);
         }
 
-        return NULL;
+        return $result;
     }
 
     /**
