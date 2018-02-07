@@ -222,9 +222,15 @@ class Resque implements EnqueueInterface
      */
     public function getQueues()
     {
-        return \array_map(function($queue) {
+        $queues = \array_map(function ($queue) {
             return new Queue($queue);
         }, \Resque::queues());
+
+        usort($queues, function (Queue $a, Queue $b) {
+            return strcasecmp($a->getName(), $b->getName());
+        });
+
+        return $queues;
     }
 
     /**
