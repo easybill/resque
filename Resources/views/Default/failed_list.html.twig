@@ -43,7 +43,7 @@
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#strackTrace" data-detail="#{{ job.id }}_stack">Stack Trace</button>
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#strackTrace" data-detail="#{{ job.id }}_args">Args</button>
                         <div class="hide" id="{{ job.id }}_stack">
-                            <code>{{ job.backtrace | join('<br>') | raw }}</code>
+                            <code>{{ job.backtrace | join('<br>') }}</code>
                         </div>
                         <div class="hide" id="{{ job.id }}_args">
                             <dl class="dl-horizontal">
